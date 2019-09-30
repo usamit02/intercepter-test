@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
+import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { APIURL } from '../../environments/environment';
 import { DataService } from './data.service';
@@ -9,11 +9,15 @@ import { DataService } from './data.service';
 })
 export class ApiService {
   constructor(private http: HttpClient, ) { }
-  public get<T>(url: string): Observable<Object> {
-    return this.http.get<T>(APIURL + url);
+  public get<T>(url: string, params: any): Observable<Object> {
+    return this.http.get<T>(APIURL + url + '.php', { params: params });
   }
-  public post<T>(url: string, param: any): Observable<Object> {
-    return this.http.post<T>(APIURL + url, param);
+  public post<T>(url: string, params: any): Observable<Object> {
+    let body = new HttpParams;
+    for (const key of Object.keys(params)) {
+      body = body.append(key, params[key]);
+    }
+    return this.http.post<T>(APIURL + url + '.php', { params: params });
   }
   public handleResponse(status: number, message: string): void {
     console.log(`status:${status}, message:${message}`);
@@ -32,13 +36,11 @@ export class ApiService {
 export class AuthInterceptor implements HttpInterceptor {
   constructor(private data: DataService, ) { }
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (request.url.includes('auth') || !this.data.token) {
-      return next.handle(request);
-    }
     request = request.clone({
       setHeaders: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + this.data.token
+        //'Authorization': 'Bearer ' + this.data.token
+        'Authorization': this.data.token
       }
     });
     return next.handle(request);

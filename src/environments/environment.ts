@@ -13,4 +13,4 @@ export const firebaseConfig = {
   storageBucket: 'salon-clife.appspot.com',
   messagingSenderId: '1091781872346'
 };
-export const APIURL = "http://localhost:8000/api/";
+export const APIURL = "http://localhost/public_html/";

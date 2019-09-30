@@ -11,7 +11,7 @@ import { DataService } from './service/data.service';
 })
 export class AppComponent {
   title = 'interceptor';
-  user: User = new User; //{ id: "", na: "未ログイン", avatar: "" };
+  user: User = new User();
   users = [];
   constructor(private api: ApiService, private afAuth: AngularFireAuth, private data: DataService) {
 
@@ -20,9 +20,9 @@ export class AppComponent {
     this.afAuth.authState.subscribe((user: any) => {
       if (user && user.uid) {
         this.afAuth.auth.currentUser.getIdToken().then(token => {
-          this.api.post("auth", { idToken: token }).toPromise().then((res: any) => {
+          this.data.token = token;
+          this.api.get("firebase", { token: token }).toPromise().then((res: any) => {
             this.user = res.user;
-            this.data.token = res.token;
           }).catch(() => {
             alert("firebaseで認証成功しましたが、 サーバーAPIの認証に失敗しました。");
             this.logout();
@@ -47,7 +47,7 @@ export class AppComponent {
   }
   getUser() {
     if (this.user.id) {
-      this.api.get("users").toPromise().then((res: any) => {
+      this.api.get("users", {}).toPromise().then((res: any) => {
         this.users = res;
       });
     } else {

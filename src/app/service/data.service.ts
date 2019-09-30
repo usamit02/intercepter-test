@@ -11,9 +11,8 @@ export class DataService {
 export class User {
   id: string = "";
   na: string = "ビジター";
-  avatar: string = APIURL + "img/avatar.jpg";
+  no: number = 0;
   p?: number = 0;
-  no?: number = 0;
   upd?: Date;
   rev?: Date;
   direct?: string;
